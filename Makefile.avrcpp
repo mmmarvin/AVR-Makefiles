@@ -1,0 +1,19 @@
+# Required variables:
+# OBJS
+# TARGET
+# CXXFLAGS
+
+OBJS_FILENAME = $(basename $(OBJS))
+
+all:
+	# compile each object
+	for obj in $(OBJS_FILENAME) ; do \
+		avr-g++ $(CXXFLAGS) -Os -DF_CPU=16000000UL -mmcu=atmega328p -c -o $(addsuffix .o, $$obj) $(addsuffix .cpp, $$obj) ; \
+	done
+	
+	# link individial objects, and create the binary
+	avr-g++ $(CXXFLAGS) -mmcu=atmega328p $(OBJS) -o $(TARGET)
+	avr-objcopy -O ihex -R .eeprom $(TARGET) $(addsuffix .hex, $(TARGET))
+	
+clean:
+	rm -rf *.o *.hex $(TARGET)
